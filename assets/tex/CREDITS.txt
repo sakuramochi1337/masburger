@@ -1,0 +1,9 @@
+テクスチャ（すべて CC0）
+- floor  = ambientCG WoodFloor051     https://ambientcg.com/a/WoodFloor051
+- brick  = ambientCG Bricks105        https://ambientcg.com/a/Bricks105
+- panel  = ambientCG WoodSiding009    https://ambientcg.com/a/WoodSiding009
+- ceiling= ambientCG OfficeCeiling001 https://ambientcg.com/a/OfficeCeiling001
+- terrazzo=ambientCG Terrazzo013      https://ambientcg.com/a/Terrazzo013
+- leather= ambientCG Leather026       https://ambientcg.com/a/Leather026
+
+窓の外の建物：Kenney「City Kit (Commercial)」（CC0）→ assets/city/
