@@ -102,6 +102,13 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .dg ul{margin:0;padding-left:1.1em}.dg li{margin:1px 0}
 .seg[aria-pressed="true"]{background:var(--mustard);color:var(--ink);border-color:var(--mustard)}
 .seg:disabled{opacity:.5;cursor:not-allowed}
+.mode-row{margin-bottom:8px}
+.mode-note{font-size:12px;color:var(--muted);margin:4px 0 10px;line-height:1.55}
+.pill.goal b{color:var(--mustard)}.pill.endless b{color:#8fd0ff}
+.end-card{max-width:440px;text-align:center}
+.end-card h2{font-size:30px;margin:4px 0 6px}
+.end-card.over h2{color:#ff8a7a}.end-card.clear h2{color:var(--mustard)}
+.end-card .sum{text-align:left;margin:12px 0}
 .pill.clean.c0 b{color:var(--pickle)}.pill.clean.c2{border-color:var(--mustard)}.pill.clean.c3{border-color:var(--ketchup)}.pill.clean.c3 b{color:#ff8a7a}
 .pill.clean .fx{margin:0 0 0 6px;color:#ffcf9a}
 .pill.prep{border-color:var(--mustard)}.pill.prep small{margin:0 0 0 6px}
@@ -189,6 +196,12 @@ button:disabled{opacity:.4;cursor:not-allowed}
       <button id="btnReset">最初からやり直す</button>
     </div>
     <div class="diff-box">
+      <div class="row mode-row" role="group" aria-label="モード">
+        <span class="diff-k">モード</span>
+        <button class="seg" id="modeNormal" data-mode="normal" aria-pressed="true">ノーマル（★5でクリア）</button>
+        <button class="seg" id="modeEndless" data-mode="endless" aria-pressed="false">エンドレス</button>
+      </div>
+      <p class="mode-note" id="modeNote"></p>
       <div class="row" role="group" aria-label="難易度">
         <span class="diff-k">難易度</span>
         <button class="seg" id="diffEasy" data-diff="easy" aria-pressed="false">イージー</button>
@@ -276,6 +289,18 @@ button:disabled{opacity:.4;cursor:not-allowed}
   </div>
 </div>
 
+<div class="overlay" id="endScr" hidden>
+  <div class="card end-card" id="endCard">
+    <h2 id="endTitle"></h2>
+    <p class="note" id="endMsg" style="margin:0"></p>
+    <div class="sum" id="endBody"></div>
+    <div class="row" style="justify-content:center">
+      <button class="primary" id="btnEndRestart">最初からやり直す</button>
+      <button id="btnEndEndless">エンドレスで続ける</button>
+    </div>
+    <p class="note" id="endNote" style="margin:8px 0 0"></p>
+  </div>
+</div>
 <div class="overlay" id="summary" hidden>
   <div class="card" style="max-width:480px">
     <h2 id="sumTitle">本日の営業終了</h2>
@@ -365,7 +390,7 @@ const DAY_LEN=240, RENT=500, FRY_DONE=7, FRY_BURN=20, DRINK_T=3;
 const pourT=k=>isShake(k)?DRINK_T*1.7:DRINK_T;
 const T_DONE=()=>S.up.hotGrill?6:9, T_BURN=()=>T_DONE()+11;
 
-const fresh=()=>({deliv:[],money:3000,day:1,rating:3,stock:{patty:8,bun:8,cheese:8,lettuce:8,tomato:8,onion:8,bacon:0,potato:8,nugget:8,fish:8,cup:8},up:{},orderNo:1,bunSet:true,reviews:[]});
+const fresh=()=>({deliv:[],money:3000,day:1,rating:3,stock:{patty:8,bun:8,cheese:8,lettuce:8,tomato:8,onion:8,bacon:0,potato:8,nugget:8,fish:8,cup:8},up:{},orderNo:1,bunSet:true,reviews:[],mode:'normal',end:null,tsv:0});
 function load(){try{const r=localStorage.getItem(SAVE_KEY);if(r){const o=JSON.parse(r);if(o&&o.stock){o.stock=Object.assign(fresh().stock,o.stock);if(!o.bunSet){o.stock.bun=Math.ceil(o.stock.bun/2);o.bunSet=true;}return Object.assign(fresh(),o);}}}catch(e){}return null;}
 function save(){if(isClient())return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
 let S=load()||fresh();
@@ -389,7 +414,8 @@ const infStock=()=>MP&&isClient()?!!MP.inf[0]:CFG.infStock;
 const stockOf=k=>infStock()?Infinity:S.stock[k];
 const hasStock=k=>infStock()||S.stock[k]>0;
 function useStock(k){if(!infStock()){S.stock[k]--;autoRestock(k);}}
-const isEasy=()=>S.diff==='easy',isHard=()=>S.diff==='hard';
+const isEasy=()=>S.diff==='easy',isHard=()=>S.diff==='hard',isEndless=()=>S.mode==='endless';
+let endPending=null;
 const diffPat=()=>isEasy()?1.5:isHard()?.85:1;
 const slotCount=()=>isHard()?4:3;
 const emptyPlaced=()=>({burgers:[],sides:[],drinks:[]});
@@ -1995,7 +2021,12 @@ function judge(o,s,r){
   return {delta,stars:worst,text,refund,perfect};
 }
 function addReview(no,stars,text,delta){
-  const before=S.rating;S.rating=Math.max(1,Math.min(5,S.rating+delta));
+  if(endPending||phase==='end')return;
+  const before=S.rating;
+  // ノーマル：評判は上がりにくく（×0.6）下がりやすい（×1.4）。0.5未満でゲームオーバー、5.0でクリア
+  if(isEndless())S.rating=Math.max(1,Math.min(5,S.rating+delta));
+  else{S.rating=Math.max(0,Math.min(5,S.rating+(delta>0?delta*.6:delta*1.4)));
+    if(!S.end&&!endPending){if(S.rating<.5)endPending='over';else if(S.rating>=4.995){S.rating=5;endPending='clear';}}}
   const rv={d:S.day,no,s:stars,t:text,dl:+(S.rating-before).toFixed(2)};
   S.reviews=[rv].concat(S.reviews||[]).slice(0,40);if(DS)DS.reviews.push(rv);
   toast(`${'★'.repeat(stars)}${'☆'.repeat(5-stars)} #${no}「${text}」 評判 ${rv.dl>=0?'+':''}${rv.dl.toFixed(2)}`,stars>=4?'good':stars<=2?'bad':'');
@@ -2007,7 +2038,7 @@ function serve(i){
   if(J.perfect&&de>=2&&Math.random()<Math.min(.6,.08*de)){if(de>=7){J.stars=3;J.delta=-.05;J.text='料理は良いけど、店が汚くて落ち着かない';}else{J.stars=4;J.delta=.02;J.text='おいしかったけど、店が少し汚れていた';}}
   const P0=s.placed,eat=P0.burgers.map(L=>({type:'burger',layers:L})).concat(P0.sides.map(x=>({type:x.kind,burnt:x.burnt})),P0.drinks.map(k=>({type:'drink',kind:k})));
   const tip=J.perfect?Math.round(o.price*.3*r*(.6+S.rating*.12)*cleanTip(de)/10)*10:0,pay=J.refund?0:o.price;
-  S.money+=pay+tip;DS.revenue+=pay;DS.tips+=tip;DS.served++;if(!J.perfect)DS.wrong++;
+  S.money+=pay+tip;DS.revenue+=pay;DS.tips+=tip;DS.served++;S.tsv=(S.tsv|0)+1;if(!J.perfect)DS.wrong++;
   sfx(J.perfect?'good':'bad');
   if(J.refund)toast(`#${o.no} 返金しました（−${yen(o.price)}）`,'bad');
   else if(J.perfect)toast(`#${o.no} 提供完了！ +${yen(pay)}${tip?`（チップ ${yen(tip)}）`:''}`,'good');
@@ -2247,7 +2278,7 @@ function cleanPill(){
   return `<div class="pill clean c${lv}"><small>店内</small><b>${CLEAN_N[lv]}</b>${fx?`<small class="fx">${fx}</small>`:''}</div>`;
 }
 function drawStats(){
-  $('#stats').innerHTML=`<div class="pill ${isEasy()?'easy':isHard()?'hard':''}"><small>${isEasy()?'EASY':isHard()?'HARD':'DAY'}</small><b>${S.day}</b></div><div class="pill"><small>時刻</small>${phase==='prep'?'準備中':phase==='closing'?'閉店作業':clockStr()}</div>${phase==='prep'?`<div class="pill prep"><b>準備中</b><small>入口の札を ${keyLabel(CFG.keys.use)} で開店</small></div>`:''}<div class="pill"><small>所持金</small><b>${yen(S.money)}</b></div><div class="pill"><small>評判</small><span class="stars">${starStr(S.rating)}</span> <b>${S.rating.toFixed(1)}</b></div>${cleanPill()}${CFG.infStock||CFG.infPat?`<div class="pill dbg-pill">DEBUG ${[CFG.infStock&&'在庫∞',CFG.infPat&&'待ち∞'].filter(Boolean).join(' ')}</div>`:''}`;
+  $('#stats').innerHTML=`<div class="pill ${isEasy()?'easy':isHard()?'hard':''}"><small>${isEasy()?'EASY':isHard()?'HARD':'DAY'}</small><b>${S.day}</b></div><div class="pill"><small>時刻</small>${phase==='prep'?'準備中':phase==='closing'?'閉店作業':clockStr()}</div>${phase==='prep'?`<div class="pill prep"><b>準備中</b><small>入口の札を ${keyLabel(CFG.keys.use)} で開店</small></div>`:''}<div class="pill"><small>所持金</small><b>${yen(S.money)}</b></div><div class="pill"><small>評判</small><span class="stars">${starStr(S.rating)}</span> <b>${S.rating.toFixed(1)}</b></div>${isEndless()?'<div class="pill endless"><b>∞</b><small>エンドレス</small></div>':'<div class="pill goal"><small>目標</small><b>★5.0</b><small>0.5未満で終了</small></div>'}${cleanPill()}${CFG.infStock||CFG.infPat?`<div class="pill dbg-pill">DEBUG ${[CFG.infStock&&'在庫∞',CFG.infPat&&'待ち∞'].filter(Boolean).join(' ')}</div>`:''}`;
 }
 function drawRail(){
   const html=slots.map((s,i)=>[s,i]).filter(([s])=>s.c&&s.c.order).sort((a,b)=>a[0].c.order.no-b[0].c.order.no).map(([s,i])=>{const c=s.c;const o=c.order,r=Math.max(0,c.pat/c.maxPat);
@@ -2319,6 +2350,7 @@ function applyUpgrades(){
 
 /* ---------- 一日の流れ ---------- */
 function startDay(){
+  if(S.end&&!isEndless()){showEnd();return;}
   ensureAudio();
   resetStations();applyUpgrades();applySlotParts();
   grng=mulberry32(seedFor(S.day));simAcc=0;
@@ -2360,6 +2392,47 @@ function endDay(){
   S.day++;DS.spent=0;save();
   $('#summary').hidden=false;
 }
+function endGame(k){
+  // 店に残っているお客さんは帰す（ゲーム終了）
+  customers.forEach(c=>disposeCustomer(c.mesh));customers.length=0;
+  slots.forEach((sl,i)=>{sl.c=null;sl.placed=emptyPlaced();sl.trayItems=null;sl.dirty=true;drawSlotSign(i);});
+  tables=TBL.map(()=>null);tableTray=TBL.map(()=>null);tableDirty=true;
+  S.deliv=(S.deliv||[]).concat(freeItems.filter(f=>f.item.type==='box').map(f=>({k:f.item.k,n:f.item.n})));
+  S.end={k,day:S.day,money:Math.round(S.money),r:S.rating,sv:S.tsv|0,dsv:DS?DS.served:0};
+  S.day++;save();
+  sfx(k==='clear'?'ding':'bad');
+  showEnd();
+}
+function showEnd(){
+  const E=S.end;if(!E)return;
+  phase='end';uiOpen=true;if(document.pointerLockElement)document.exitPointerLock();
+  ['title','summary','tablet'].forEach(id=>$('#'+id).hidden=true);
+  const clear=E.k==='clear';
+  $('#endCard').className='card end-card '+(clear?'clear':'over');
+  $('#endTitle').textContent=clear?'クリア！ ★5.0 達成':'ゲームオーバー';
+  $('#endMsg').textContent=clear?'評判が最高の5.0に届きました。街いちばんのバーガー店です！':'評判が0.5を下回り、お客さんが来なくなってしまいました…';
+  $('#endBody').innerHTML=`<span class="k">難易度</span><span class="v">${isEasy()?'イージー':isHard()?'ハード':'ノーマル'}</span>
+    <span class="k">到達日</span><span class="v">DAY ${E.day}</span>
+    <span class="k">提供したお客さん（合計）</span><span class="v">${E.sv} 人</span>
+    <span class="k">所持金</span><span class="v">${yen(E.money)}</span>
+    <span class="k">最終評判</span><span class="v"><span class="stars">${starStr(E.r)}</span> ${(+E.r).toFixed(2)}</span>`;
+  const cl=isClient();
+  $('#btnEndRestart').disabled=cl;$('#btnEndEndless').disabled=cl;
+  $('#btnEndEndless').textContent=clear?'エンドレスで続ける':'エンドレスで続ける（評判1.0から）';
+  $('#endNote').textContent=cl?'続け方は店長が選びます。':'エンドレスにすると、今の店（お金・設備）のまま終わりなしで遊べます。';
+  $('#endScr').hidden=false;drawStats();
+}
+function endRestart(){
+  if(isClient())return;
+  const d=S.diff,m=S.mode;S=fresh();S.diff=d;S.mode=m;save();
+  applyUpgrades();resetStations();$('#endScr').hidden=true;titleMode();toast('最初からやり直します','good');
+}
+function endEndless(){
+  if(isClient())return;
+  S.mode='endless';S.rating=Math.max(1,S.rating);S.end=null;save();
+  $('#endScr').hidden=true;titleMode();toast('エンドレスモードで営業を続けます','good');
+}
+$('#btnEndRestart').onclick=endRestart;$('#btnEndEndless').onclick=endEndless;
 function toggleOpen(){
   if(phase==='prep'){phase='open';spawnT=Math.min(spawnT,2);toast('開店しました！いらっしゃいませ','good');sfx('ding');}
   else if(phase==='open'){phase='closing';toast('閉店の札にしました。残っているお客さんに提供して片付けよう');}
@@ -2367,6 +2440,7 @@ function toggleOpen(){
   drawStats();
 }
 function updateDay(dt){
+  if(endPending){const k=endPending;endPending=null;if(phase==='prep'||phase==='open'||phase==='closing'){endGame(k);return;}}
   if(phase==='open'){
     dayT+=dt;spawnT-=dt;
     if(spawnT<=0){spawnCustomer();const base=Math.max(8,27-S.rating*3.2-(S.up.sign?5:0));spawnT=base*(.75+grng()*.5);}
@@ -2502,7 +2576,7 @@ function buildG(){
   const hd={};for(const p in MP.heldOf){if(MP.heldOf[p])hd[p]=encI(MP.heldOf[p]);}
   if(!MP.epoch)MP.epoch=MP.me+':'+(++MP.epN);
   return {v:1,ep:MP.epoch,q:++MP.gSeq,ph:phase,t:Math.round(dayT*10),
-    sd:{dv:(S.deliv||[]).map(d=>STK.indexOf(d.k)+':'+d.n).join(','),m:Math.round(S.money),d:S.day,r:Math.round(S.rating*100),o:S.orderNo,st:STK.map(k=>S.stock[k]),df:S.diff==='easy'?1:S.diff==='hard'?2:0,up:Object.keys(S.up).filter(k=>S.up[k]).join(',')},
+    sd:{dv:(S.deliv||[]).map(d=>STK.indexOf(d.k)+':'+d.n).join(','),m:Math.round(S.money),d:S.day,r:Math.round(S.rating*100),o:S.orderNo,md:isEndless()?1:0,en:S.end?[S.end.k==='clear'?2:1,S.end.day,S.end.money,Math.round(S.end.r*100),S.end.sv]:0,tv:S.tsv|0,st:STK.map(k=>S.stock[k]),df:S.diff==='easy'?1:S.diff==='hard'?2:0,up:Object.keys(S.up).filter(k=>S.up[k]).join(',')},
     gr:grill.map(g=>g.cook===null?-1:Math.round(g.cook*10)),fr:fry.map(f=>f.t===null?-1:[Math.round(f.t*10),FRY_KINDS.indexOf(f.kind)]),dk:drinks.map(d=>d.t===null?-1:Math.round(d.t*10)),
     bd:boards.map(b=>[encL(b.layers),b.done?1:0]),
     sw:slots.map(sl=>sl.c?sl.c.id:0),
@@ -2535,6 +2609,7 @@ function runAs(peer,fn){
 function hostAct(peer,a){
   const [,k,i,x,z]=a;MP.curK=k;
   if(k==='start'){if(phase==='title'||phase==='summary')startDay();return;}
+  if(phase==='end')return;
   if(k==='buy'){buyItem(i);return;}
   if(k==='upg'){buyUpg(i);return;}
   if(k==='menu'){buyMenu(i);return;}
@@ -2568,7 +2643,9 @@ function applyG(g){
   const pend=ack<MP.actSeq&&performance.now()-MP.lastActAt<4000;MP.pend=pend;
   const nd=sd.df===1?'easy':sd.df===2?'hard':'normal';
   S.deliv=String(sd.dv||'').split(',').filter(Boolean).map(x=>{const [a,b]=x.split(':');return {k:STK[+a],n:+b||0};}).filter(d=>d.k);
-  S.money=sd.m;S.day=sd.d;S.rating=sd.r/100;S.orderNo=sd.o;if(S.diff!==nd){S.diff=nd;drawDiff();}if(!pend)STK.forEach((k,i)=>{S.stock[k]=(sd.st||[])[i]||0;});
+  S.money=sd.m;S.day=sd.d;S.rating=sd.r/100;S.orderNo=sd.o;S.tsv=sd.tv|0;
+  {const nm=sd.md?'endless':'normal';const en=Array.isArray(sd.en)?{k:sd.en[0]===2?'clear':'over',day:sd.en[1],money:sd.en[2],r:sd.en[3]/100,sv:sd.en[4]}:null;
+   const ch=nm!==S.mode||JSON.stringify(en)!==JSON.stringify(S.end);S.mode=nm;S.end=en;if(ch){drawMode();if(phase==='end'&&en)showEnd();}}if(S.diff!==nd){S.diff=nd;drawDiff();}if(!pend)STK.forEach((k,i)=>{S.stock[k]=(sd.st||[])[i]||0;});
   const up={};String(sd.up||'').split(',').filter(Boolean).forEach(k=>up[k]=true);
   if(JSON.stringify(up)!==JSON.stringify(S.up)){S.up=up;applyUpgrades();}
   MP.inf=g.inf||[0,0];
@@ -2605,11 +2682,12 @@ function clientPhase(ph,g){
   if(ph===phase)return;
   const prev=phase;phase=ph;
   if(ph==='prep'||ph==='open'||ph==='closing'){
-    $('#title').hidden=true;$('#summary').hidden=true;
+    $('#title').hidden=true;$('#summary').hidden=true;$('#endScr').hidden=true;
     uiOpen=!$('#settings').hidden||!$('#tablet').hidden;
     if(prev!=='prep'&&prev!=='open'&&prev!=='closing'){P.x=rnd(-1,1);P.z=-1.4;yaw=Math.PI;pitch=-.15;showToast(`DAY ${S.day} 準備中：入口の札を ${keyLabel(CFG.keys.use)} で OPEN にすると開店`,'good');}
   }else if(ph==='summary'){$('#summary').hidden=false;uiOpen=true;if(document.pointerLockElement)document.exitPointerLock();}
-  else if(ph==='title'){titleMode();}
+  else if(ph==='title'){$('#endScr').hidden=true;titleMode();}
+  else if(ph==='end'){showEnd();}
 }
 function applyW(w){
   if(!w)return;
@@ -2760,7 +2838,7 @@ function tickAvatars(dt){
   });
 }
 function updateMPStatus(){
-  if(phase==='title')drawDiff();
+  if(phase==='title'){drawDiff();drawMode();}
   const el=$('#mpStatus');
   if(!MP.room){MP.statusSig='';el.textContent=window.BUNBUN_ROOM?'オンラインに接続できないため、ひとりで営業します。':'オンラインに接続できないため、ひとりで営業します。一緒に遊ぶには、Claudeにログインした状態で、共有から招待されたアカウントで開く必要があります（公開リンクやログインなしでは接続できません）。';return;}
   if(window.BUNBUN_ROOM&&MP.room.connected&&!MP.room.connected()){MP.statusSig='';el.textContent='オンラインに接続しています…（数秒かかることがあります）';return;}
@@ -2774,6 +2852,7 @@ function updateMPStatus(){
   const rows=ps.length>1?ps.map(p=>[peerColor(p.peer),String(p.presence.n||'スタッフ').slice(0,12)+(p.peer===MP.me?'（あなた）':''),p.peer===MP.host,link(p)]):[];
   const sig=txt+JSON.stringify(rows)+phase+S.day+isClient();
   if(sig===MP.statusSig)return;MP.statusSig=sig;
+  if(phase==='end'&&S.end)showEnd();
   el.textContent=txt;
   if(phase==='title')$('#btnStart').textContent=isClient()?`開店を店長に依頼（DAY ${S.day}）`:`開店する（DAY ${S.day}）`;
   const box=$('#players');
@@ -2860,7 +2939,7 @@ function openSettings(){
 }
 function closeSettings(){
   rebind=null;$('#settings').hidden=true;
-  uiOpen=!$('#title').hidden||!$('#summary').hidden||!$('#tablet').hidden;
+  uiOpen=!$('#title').hidden||!$('#summary').hidden||!$('#tablet').hidden||!$('#endScr').hidden;
   if(active()&&!uiOpen)lock();
 }
 function drawKeyList(){
@@ -2892,10 +2971,19 @@ function drawDiff(){
 }
 ['diffEasy','diffNormal','diffHard'].forEach(id=>$('#'+id).addEventListener('click',e=>{if(isClient())return;S.diff=e.currentTarget.dataset.diff;save();drawDiff();drawStats();}));
 $('#diffGrid').addEventListener('click',e=>{const c=e.target.closest('.dg');if(!c||isClient())return;S.diff=c.dataset.diff;save();drawDiff();drawStats();});
+function drawMode(){
+  const e=isEndless();
+  [['modeNormal',false],['modeEndless',true]].forEach(([id,v])=>{const b=$('#'+id);b.setAttribute('aria-pressed',e===v);b.disabled=isClient();});
+  $('#modeNote').textContent=(e?'エンドレス：終わりなしで営業を続けます。評判の上がり下がりは控えめ（最低1.0）。':
+    'ノーマル：評判は上がりにくく下がりやすい（上昇×0.6・下降×1.4）。評判が0.5を下回るとゲームオーバー、5.0に達するとクリア。')+(isClient()?'（モードは店長が決めます）':'');
+}
+function setMode(m){if(isClient()||S.mode===m)return;S.mode=m;if(m==='endless'){S.rating=Math.max(1,S.rating);S.end=null;}save();drawMode();drawStats();}
+$('#modeNormal').onclick=()=>setMode('normal');$('#modeEndless').onclick=()=>setMode('endless');
 function titleMode(){
+  if(S.end&&!isEndless()){showEnd();return;}
   phase='title';uiOpen=true;$('#title').hidden=false;
   $('#btnStart').textContent=isClient()?`開店を店長に依頼（DAY ${S.day}）`:`開店する（DAY ${S.day}）`;
-  drawDiff();drawStats();
+  drawDiff();drawMode();drawStats();
 }
 function requestStart(){ensureAudio();if(isClient()){sendAct(['start',0]);showToast('店長に開店を依頼しました');}else startDay();}
 $('#btnStart').onclick=requestStart;
@@ -2905,7 +2993,7 @@ $('#btnShop1').onclick=openShopFromMenu;$('#btnShop2').onclick=openShopFromMenu;
 let resetArm=false;
 $('#btnReset').onclick=()=>{
   if(!resetArm){resetArm=true;$('#btnReset').textContent='本当にリセット？もう一度押す';setTimeout(()=>{resetArm=false;$('#btnReset').textContent='最初からやり直す';},3000);return;}
-  S=fresh();save();resetArm=false;$('#btnReset').textContent='最初からやり直す';applyUpgrades();titleMode();toast('データをリセットしました');
+  {const m=S.mode;S=fresh();S.mode=m;}save();resetArm=false;$('#btnReset').textContent='最初からやり直す';applyUpgrades();titleMode();toast('データをリセットしました');
 };
 
 batchStatic();resetStations();applyUpgrades();titleMode();applyCfg();drawKeyHint();loadChars();loadCity();
