@@ -185,7 +185,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
       <div class="step"><b>1 焼く</b>冷蔵庫からパティを取り、グリルへ。緑の印が出たら焼き上がり。赤は焦げ。</div>
       <div class="step"><b>2 重ねる</b>テーブル中央の束から包み紙を1枚取って置き、その上にバンズを置くと上下セットで並びます。チケットの順に具材を挟み、T キーで包んで完成。物は台や床のどこにでも置けます。</div>
       <div class="step"><b>3 出す</b>包んだバーガーと、注文のサイド（ポテト・オニオンリング・ナゲット）とドリンク（コーラ・メロンソーダ・ウーロン茶・シェイク）を受け渡し口へ。フィッシュバーガーの魚はフライヤーで揚げてから挟みます。ハードではテイクアウトは紙袋、イートインはトレーで席へ。</div>
-      <div class="step"><b>メニュー</b>最初はハンバーガー・チーズバーガー・ポテト・コーラだけ。稼いだお金で、発注端末の「メニュー」から野菜・ソース・サイド・ベーコン・シェイク・フィッシュなどを1つずつ増やそう。</div>
+      <div class="step"><b>メニュー</b>最初はハンバーガー・チーズバーガー・ポテト・コーラだけ。稼いだお金で、発注端末の「メニュー」から野菜・ソース・サイド・ベーコン・シェイク・フィッシュ・ホットドッグ・チリソースなどを1つずつ増やそう。ホットドッグはソーセージをグリルで焼いてドッグバンズに挟みます。</div>
       <div class="step"><b>4 仕入れ</b>発注端末で頼んだ食材は、厨房左手前の<b style="display:inline;color:inherit">搬入口</b>に段ボールで届きます。運んで冷蔵庫や棚で E を押すと開けて補充。床の箱は通路をふさぐので早めに片付けよう。</div>
       <div class="step"><b>5 片付け</b>店内で食べたお客さんのトレーと、床に落ちたゴミを E で拾ってゴミ箱へ（入口脇にもあります）。汚れるほどお客さんの我慢とチップが減ります。</div>
     </div>
@@ -328,22 +328,26 @@ const AURL=u=>(window.MB_BUNDLE&&window.MB_BUNDLE[u])||u;
 
 /* ---------- データ ---------- */
 const SAVE_KEY='bunbun-burger-v1';
-const BINS=['patty','bun','cheese','lettuce','tomato','onion','bacon','fish'];
-const ING={patty:'パティ',bun:'バンズ',cheese:'チーズ',lettuce:'レタス',tomato:'トマト',onion:'オニオン',bacon:'ベーコン',potato:'ポテト',nugget:'ナゲット',fish:'魚の切り身',cup:'カップ'};
+const BINS=['patty','bun','cheese','lettuce','tomato','onion','bacon','fish','sausage','dbun'];
+const ING={patty:'パティ',bun:'バンズ',cheese:'チーズ',lettuce:'レタス',tomato:'トマト',onion:'オニオン',bacon:'ベーコン',potato:'ポテト',nugget:'ナゲット',fish:'魚の切り身',cup:'カップ',sausage:'ソーセージ',dbun:'ドッグバンズ'};
 const LAYER={
   bun_t:{n:'上バンズ',c:'#d08a3e'},bun_m:{n:'中バンズ',c:'#ecc078'},bun_b:{n:'下バンズ',c:'#e0aa63'},
   patty:{n:'パティ',c:'#6b3d1f'},patty_raw:{n:'生パティ',c:'#d07878'},patty_burnt:{n:'焦げパティ',c:'#1d130c'},
   cheese:{n:'チーズ',c:'#f5c518'},lettuce:{n:'レタス',c:'#6cc04a'},tomato:{n:'トマト',c:'#e0402f'},
   onion:{n:'オニオン',c:'#efe0f0'},bacon:{n:'ベーコン',c:'#b5472f'},
   fish:{n:'白身魚フライ',c:'#d9a24a'},fish_raw:{n:'生の魚',c:'#f1d6cf'},fish_burnt:{n:'焦げた魚',c:'#3e230c'},tartar:{n:'タルタル',c:'#ece6c8'},
-  ketchup:{n:'ケチャップ',c:'#b8180f'},mayo:{n:'マヨネーズ',c:'#f4ecd2'},mustard:{n:'マスタード',c:'#e2b007'}
+  ketchup:{n:'ケチャップ',c:'#b8180f'},mayo:{n:'マヨネーズ',c:'#f4ecd2'},mustard:{n:'マスタード',c:'#e2b007'},chili:{n:'チリソース',c:'#8e2c10'},
+  hd_b:{n:'ホットドッグバンズ',c:'#dc9a4e'},hd_t:{n:'ホットドッグバンズ',c:'#dc9a4e'},
+  sausage:{n:'ソーセージ',c:'#a4412a'},sausage_raw:{n:'生ソーセージ',c:'#e7a196'},sausage_burnt:{n:'焦げソーセージ',c:'#2a130a'}
 };
-const SAUCES=['ketchup','mayo','mustard','tartar'];
+const SAUCES=['ketchup','mayo','mustard','tartar','chili'];
 const SIDES=['fries','rings','nuggets'],SIDE_N={fries:'ポテト',rings:'オニオンリング',nuggets:'ナゲット',fishfry:'白身魚フライ'},SIDE_P={fries:220,rings:260,nuggets:280};
 const DRINKS=['cola','melon','oolong','vanilla','choco'],DRINK_N={cola:'コーラ',melon:'メロンソーダ',oolong:'ウーロン茶',vanilla:'バニラシェイク',choco:'チョコシェイク'},DRINK_P={cola:160,melon:180,oolong:150,vanilla:250,choco:250};
 const isShake=k=>k==='vanilla'||k==='choco';
 const FRY_KINDS=['fries','rings','nuggets','fishfry'];
-const INS=['patty','cheese','lettuce','tomato','onion','bacon','fish','fishfry','bun'];
+const INS=['patty','cheese','lettuce','tomato','onion','bacon','fish','fishfry','bun','sausage'];
+// バンズの種類：バーガー用（上下セット）とホットドッグ用（1本）
+const isBunT=t=>t==='bun'||t==='dbun',pairOf=t=>t==='dbun'?['hd_b','hd_t']:['bun_b','bun_t'],bunItemOf=L=>({type:L&&L[0]==='hd_b'?'dbun':'bun'}),isDog=L=>!!L&&L[0]==='hd_b';
 const isSide=t=>SIDES.includes(t),DONE_T=['burger','fries','rings','nuggets','drink'];
 const SUPPLY=[
   {k:'patty',n:'冷凍パティ',pack:10,price:700},
@@ -357,6 +361,8 @@ const SUPPLY=[
   {k:'nugget',n:'冷凍ナゲット',pack:10,price:450},
   {k:'fish',n:'白身魚の切り身',pack:10,price:600},
   {k:'cup',n:'ドリンクカップ',pack:10,price:200},
+  {k:'sausage',n:'ソーセージ',pack:10,price:500},
+  {k:'dbun',n:'ホットドッグバンズ',pack:10,price:300},
 ];
 const UPG=[
   {k:'hotGrill',n:'高火力バーナー',d:'パティが約3割早く焼ける',price:2500},
@@ -377,20 +383,23 @@ const MENU_UP=[
   {k:'bacon',n:'ベーコン',d:'ベーコン入りのバーガー（単価アップ）',price:2000},
   {k:'shake',n:'シェイク',d:'バニラ・チョコシェイク（単価アップ）',price:1800},
   {k:'fish',n:'フィッシュバーガー',d:'白身魚フライとタルタルソース',price:2500},
+  {k:'hotdog',n:'ホットドッグ',d:'ソーセージをグリルで焼き、ドッグバンズに挟んでケチャップとマスタード',price:2000},
+  {k:'chili',n:'チリソース',d:'チリバーガー・チリドッグ（名前に「チリ」が付き、単価アップ）',price:1200},
 ];
 const has=k=>!!(S&&S.up&&S.up[k]);
-const ING_REQ={lettuce:['veg'],tomato:['veg'],onion:['veg','sides'],bacon:['bacon'],fish:['fish'],nugget:['sides']};
+const ING_REQ={lettuce:['veg'],tomato:['veg'],onion:['veg','sides'],bacon:['bacon'],fish:['fish'],nugget:['sides'],sausage:['hotdog'],dbun:['hotdog']};
 const ingOk=k=>!ING_REQ[k]||ING_REQ[k].some(has);
 const sideOk=k=>k==='fries'||has('sides');
 const drinkOk=k=>k==='cola'||(isShake(k)?has('shake'):has('drinks'));
-const sauceOk=k=>k==='ketchup'||(k==='tartar'?has('fish'):has('sauce'));
+const sauceReq=k=>k==='tartar'?['fish']:k==='chili'?['chili']:k==='mustard'?['sauce','hotdog']:['sauce'];
+const sauceOk=k=>k==='ketchup'||sauceReq(k).some(has);
 const menuOf=k=>(MENU_UP.find(m=>m.k===k)||{n:k}).n;
 const lockMsg=(name,keys)=>`${name}は未解禁です（発注端末の「メニュー」で「${keys.map(menuOf).join('」か「')}」）`;
 const DAY_LEN=240, RENT=500, FRY_DONE=7, FRY_BURN=20, DRINK_T=3;
 const pourT=k=>isShake(k)?DRINK_T*1.7:DRINK_T;
 const T_DONE=()=>S.up.hotGrill?6:9, T_BURN=()=>T_DONE()+11;
 
-const fresh=()=>({deliv:[],money:3000,day:1,rating:3,stock:{patty:8,bun:8,cheese:8,lettuce:8,tomato:8,onion:8,bacon:0,potato:8,nugget:8,fish:8,cup:8},up:{},orderNo:1,bunSet:true,reviews:[],mode:'normal',end:null,tsv:0});
+const fresh=()=>({deliv:[],money:3000,day:1,rating:3,stock:{patty:8,bun:8,cheese:8,lettuce:8,tomato:8,onion:8,bacon:0,potato:8,nugget:8,fish:8,cup:8,sausage:8,dbun:8},up:{},orderNo:1,bunSet:true,reviews:[],mode:'normal',end:null,tsv:0});
 function load(){try{const r=localStorage.getItem(SAVE_KEY);if(r){const o=JSON.parse(r);if(o&&o.stock){o.stock=Object.assign(fresh().stock,o.stock);if(!o.bunSet){o.stock.bun=Math.ceil(o.stock.bun/2);o.bunSet=true;}return Object.assign(fresh(),o);}}}catch(e){}return null;}
 function save(){if(isClient())return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
 let S=load()||fresh();
@@ -658,11 +667,47 @@ const baconGeos=[0,1].map(()=>{const g=new THREE.BoxGeometry(.25,.005,.04,32,1,1
   for(let i=0;i<p.count;i++){const x=p.getX(i);p.setY(i,p.getY(i)+.006*Math.sin(x*38+ph)+.003*Math.sin(x*91));}g.computeVertexNormals();return g;});
 function baconMesh(){const g=new THREE.Group();[-.023,.023].forEach((z,i)=>{const b=mk(baconGeos[i],baconMat);b.position.set(rnd(-.01,.01),0,z);b.rotation.y=rnd(-.12,.12);g.add(b);});return g;}
 
-const sauceMats={tartar:new THREE.MeshStandardMaterial({color:'#ece6c8',roughness:.3}),ketchup:new THREE.MeshStandardMaterial({color:'#b8180f',roughness:.15}),mayo:new THREE.MeshStandardMaterial({color:'#f4ecd2',roughness:.2}),mustard:new THREE.MeshStandardMaterial({color:'#e2b007',roughness:.2})};
+const sauceMats={chili:new THREE.MeshStandardMaterial({color:'#8e2c10',roughness:.55}),tartar:new THREE.MeshStandardMaterial({color:'#ece6c8',roughness:.3}),ketchup:new THREE.MeshStandardMaterial({color:'#b8180f',roughness:.15}),mayo:new THREE.MeshStandardMaterial({color:'#f4ecd2',roughness:.2}),mustard:new THREE.MeshStandardMaterial({color:'#e2b007',roughness:.2})};
 const sauceGeos=[0,1,2].map(()=>{const pts=[],N=7+(Math.random()*3|0);
   for(let i=0;i<=N*8;i++){const t=i/(N*8),x=-.09+.18*t,lim=Math.sqrt(Math.max(0,1-(x/.1)**2));pts.push(new THREE.Vector3(x,rnd(0,.0015),.085*lim*Math.sin(t*Math.PI*N)));}
   return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),N*24,.0055,6,false);});
-function sauceMesh(k){const m=mk(pick(sauceGeos),sauceMats[k]);m.rotation.y=rnd(0,6);return m;}
+const chiliGeos=[0,1].map(()=>{const pts=[],N=5;
+  for(let i=0;i<=N*8;i++){const t=i/(N*8),x=-.085+.17*t,lim=Math.sqrt(Math.max(0,1-(x/.095)**2));pts.push(new THREE.Vector3(x,rnd(0,.003),.075*lim*Math.sin(t*Math.PI*N)));}
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),N*20,.011,6,false);});
+function sauceMesh(k){const m=mk(pick(k==='chili'?chiliGeos:sauceGeos),sauceMats[k]);m.rotation.y=rnd(0,6);if(k==='chili')m.scale.y=.6;return m;}
+// ホットドッグ用：細長いパンの上に、縦にジグザグにかける
+const hdSauceGeos=[0,1].map(j=>{const pts=[],N=9;
+  for(let i=0;i<=N*8;i++){const t=i/(N*8);pts.push(new THREE.Vector3(-.095+.19*t,0,.013*Math.sin(t*Math.PI*N+j)));}
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),N*16,.0042,6,false);});
+const hdChiliGeo=(()=>{const pts=[],N=6;for(let i=0;i<=N*8;i++){const t=i/(N*8);pts.push(new THREE.Vector3(-.085+.17*t,.003*Math.sin(t*40),.008*Math.sin(t*Math.PI*N)));}
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),N*16,.011,7,false);})();
+// ソーセージ（焼くと赤茶色→焦げ）
+const SC_RAW=new THREE.Color('#e7a196'),SC_DONE=new THREE.Color('#a4412a'),SC_BURNT=new THREE.Color('#2a130a'),_sc=new THREE.Color();
+function sausColor(cook){const d=T_DONE(),b=T_BURN();if(cook<=d)return _sc.copy(SC_RAW).lerp(SC_DONE,cook/d);return _sc.copy(SC_DONE).lerp(SC_BURNT,Math.min(1,(cook-d)/(b-d)));}
+const sausState=c=>c<T_DONE()?'sausage_raw':c<T_BURN()?'sausage':'sausage_burnt';
+const SAUS_R=.017,SAUS_L=.2;
+const sausGeo=(()=>{const c=new THREE.CylinderGeometry(SAUS_R,SAUS_R,SAUS_L,16,1,true);c.rotateZ(Math.PI/2);
+  const a=new THREE.SphereGeometry(SAUS_R,16,8);a.translate(SAUS_L/2,0,0);const b=new THREE.SphereGeometry(SAUS_R,16,8);b.translate(-SAUS_L/2,0,0);return mergeGeos([c,a,b]);})();
+const sausMatOf=c=>new THREE.MeshStandardMaterial({color:sausColor(c).clone(),roughness:.32});
+const SAUS_MATS={};
+function sausageMesh(cook,own){if(own)return mk(sausGeo,sausMatOf(cook));const k=Math.round(cook*4);return mk(sausGeo,SAUS_MATS[k]||(SAUS_MATS[k]=sausMatOf(k/4)));}
+const sausCookOf=k=>k==='sausage'?T_DONE()+1:k==='sausage_raw'?0:T_BURN()+2;
+// ホットドッグバンズ（切れ目の入った細長いパン）
+const HDB=new THREE.MeshStandardMaterial({color:'#d8914a',roughness:.6}),HDB_IN=new THREE.MeshStandardMaterial({color:'#f2dcae',roughness:.8});
+function hdBunMesh(){const g=new THREE.Group(),sg=geoOf('hdsph',()=>new THREE.SphereGeometry(1,24,12));
+  const base=mk(sg,HDB);base.scale.set(.118,.024,.043);base.position.y=.024;g.add(base);
+  [-1,1].forEach(sd=>{const h=mk(sg,HDB);h.scale.set(.115,.034,.021);h.position.set(0,.04,sd*.03);h.rotation.x=sd*.28;g.add(h);});
+  const inn=mk(geoOf('hdin',()=>new THREE.BoxGeometry(.2,.003,.034)),HDB_IN);inn.position.y=.036;g.add(inn);
+  g.userData.base=true;return g;}
+function hotdogStack(layers){
+  const g=new THREE.Group();g.add(hdBunMesh());let y=.03,n=0;
+  layers.slice(1).forEach(k=>{if(k==='hd_t')return;
+    if(k.startsWith('sausage')){const m=sausageMesh(sausCookOf(k));m.position.y=y+.015;g.add(m);y+=.032;return;}
+    if(k==='chili'){const m=mk(hdChiliGeo,sauceMats.chili);m.position.y=y+.004;g.add(m);y+=.012;return;}
+    if(SAUCES.includes(k)){const m=mk(hdSauceGeos[n++%2],sauceMats[k]);m.position.y=y+.003;g.add(m);y+=.005;return;}
+    const {m,h}=layerMesh(k);m.scale.set(.9,1,.45);m.position.y=m.userData.base?y:y+h/2;g.add(m);y+=h;});
+  return shade(g);
+}
 const fishTex=canvasTex(128,128,(c,w,h)=>{c.fillStyle='#d9d9d9';c.fillRect(0,0,w,h);speckle(c,w,h,900,['rgba(255,255,255,.6)','rgba(0,0,0,.25)','rgba(120,60,0,.25)'],.6,2.4);}).tex;
 const fishGeo=new THREE.CylinderGeometry(.075,.07,.022,20);
 const FISH_C={fish:'#e0a04a',fish_raw:'#f3ddd6',fish_burnt:'#3a210c'};
@@ -670,7 +715,10 @@ const FISH_MATS={};
 function fishMesh(k){const m=mk(fishGeo,FISH_MATS[k]||(FISH_MATS[k]=new THREE.MeshStandardMaterial({color:FISH_C[k],map:k==='fish_raw'?null:fishTex,bumpMap:k==='fish_raw'?null:fishTex,bumpScale:.02,roughness:k==='fish_raw'?.35:.85})));m.scale.set(1.35,1,.85);m.rotation.y=rnd(-.3,.3);return m;}
 function layerMesh(k,cook){
   if(k==='fish'||k==='fish_raw'||k==='fish_burnt')return {m:fishMesh(k),h:.022};
-  if(SAUCES.includes(k))return {m:sauceMesh(k),h:.007};
+  if(SAUCES.includes(k))return {m:sauceMesh(k),h:k==='chili'?.012:.007};
+  if(k==='sausage'||k==='sausage_raw'||k==='sausage_burnt'){const m=sausageMesh(sausCookOf(k));m.rotation.y=rnd(-.2,.2);return {m,h:.034};}
+  if(k==='hd_b')return {m:hdBunMesh(),h:.03};
+  if(k==='hd_t')return {m:new THREE.Group(),h:0};
   switch(k){
     case 'bun_b':case 'bun_m':return {m:bunBottom(),h:BUNB_H};
     case 'bun_t':return {m:bunTop(),h:BUN_H};
@@ -686,6 +734,7 @@ function layerMesh(k,cook){
   return {m:new THREE.Group(),h:0};
 }
 function buildStack(layers){
+  if(isDog(layers))return hotdogStack(layers);
   const g=new THREE.Group();let y=0;
   layers.forEach(k=>{const {m,h}=layerMesh(k);m.position.y=m.userData.base?y:y+h/2;g.add(m);y+=h;});
   return shade(g);
@@ -757,6 +806,8 @@ function itemMesh(it){
     case 'dtray':return dtrayMesh();
     case 'patty':return shade(layerMesh('patty',it.cook).m);
     case 'bun':return buildStack(['bun_b','bun_t']);
+    case 'dbun':return buildStack(['hd_b','hd_t']);
+    case 'sausage':return shade(sausageMesh(it.cook));
     case 'burger':return wrappedMesh(it.layers);
     case 'fries':case 'rings':case 'nuggets':return sideMesh(it.type,it.burnt);
     case 'fishfry':return shade(fishMesh(it.burnt?'fish_burnt':'fish'));
@@ -1004,17 +1055,19 @@ const PILE={
   onion:{n:10,mk:onionMesh,pos:j=>[((j%2)-.5)*.24,.006,((j>>1)-2)*.12],rot:()=>rnd(0,6)},
   fish:{n:8,mk:()=>fishMesh('fish_raw'),pos:j=>[((j%2)-.5)*.22,.012+(j>>2)*.024,(((j>>1)%2)-.5)*.3],rot:()=>rnd(-.2,.2)},
   bacon:{n:10,mk:baconMesh,pos:j=>[0,.007+(j>=5?.013:0),((j%5)-2)*.1+(j>=5?.03:0)]},
+  sausage:{n:10,mk:()=>sausageMesh(0),pos:j=>[((j%5)-2)*.044+(j>=5?.022:0),.018+(j>=5?.03:0),rnd(-.02,.02)],rot:()=>Math.PI/2+rnd(-.05,.05)},
+  dbun:{n:6,mk:hdBunMesh,pos:j=>[((j%3)-1)*.14,(j>=3?.062:0),rnd(-.01,.01)],rot:()=>Math.PI/2+rnd(-.04,.04)},
 };
 const binLabels=[],piles={},binLids={};
 BINS.forEach((k,i)=>{
-  const x=-7.2+i*.66;
-  openBox(.6,.12,.7,STEEL,.008,scene).position.set(x,1.04,-5.6);
+  const x=-7.28+i*.53;
+  openBox(.5,.12,.7,STEEL,.008,scene).position.set(x,1.04,-5.6);
   const P=PILE[k],arr=[];
   for(let j=0;j<P.n;j++){const m=P.mk();const [px,py,pz]=P.pos(j);m.position.set(x+px,1.048+py,-5.6+pz);if(P.rot)m.rotation.y=P.rot();scene.add(m);arr.push(m);}
   piles[k]=arr;
-  if(ING_REQ[k])binLids[k]=box(.62,.012,.72,STEEL,x,1.17,-5.6); // 未解禁の具材はふたを閉める
-  const lab=label(.6,.3,240);lab.position.set(x,1.55,-6.12);scene.add(lab);binLabels[i]={lab,k};
-  hitBox(.62,.6,.8,x,1.2,-5.5,'bin',i);
+  if(ING_REQ[k])binLids[k]=box(.52,.012,.72,STEEL,x,1.17,-5.6); // 未解禁の具材はふたを閉める
+  const lab=label(.5,.25,240);lab.position.set(x,1.55,-6.12);scene.add(lab);binLabels[i]={lab,k};
+  hitBox(.52,.6,.8,x,1.2,-5.5,'bin',i);
 });
 
 // グリドル（鉄板）
@@ -1030,9 +1083,10 @@ box(.02,.02,.01,new THREE.MeshBasicMaterial({color:0xff4422}),1.45,.995,-5.175);
 const spat=new THREE.Group();spat.position.set(1.75,.945,-5.4);spat.rotation.y=.3;scene.add(spat);
 box(.1,.003,.11,STEEL,0,.003,0,spat);box(.03,.012,.06,STEEL,0,.008,.07,spat);box(.025,.018,.13,BLACK,0,.015,.16,spat);
 const grillLab=label(1.2,.26,360,(c,w,h)=>plate(c,w,h,'#2f2925','#f2b134',[['グリル',h*.5,null,.52]]));grillLab.position.set(0,1.75,-6.12);scene.add(grillLab);
-const grillMesh=[],grillDot=[],grillLock=[];
+const grillMesh=[],grillSaus=[],grillDot=[],grillLock=[];
 for(let i=0;i<6;i++){
   const p=pattyMesh(0,true);p.position.set(GX(i),1.082,-5.55);p.visible=false;scene.add(p);grillMesh.push(p);
+  const sg=sausageMesh(0,true);sg.position.set(GX(i),1.088,-5.55);sg.visible=false;scene.add(sg);grillSaus.push(sg);
   grillDot.push(dot(scene,GX(i),1.3,-5.55));
   const lk=new THREE.Group();lk.position.set(GX(i),1.076,-5.6);scene.add(lk);box(.46,.012,.6,STEEL,0,0,0,lk);box(.12,.02,.02,BLACK,0,.016,.22,lk);grillLock.push(lk);
   hitBox(.48,.4,.8,GX(i),1.15,-5.5,'grill',i);
@@ -1227,7 +1281,7 @@ const boardGroups=[],boardPapers=[],spotGroups=[];
 const SPOTS=[];
 const BOARD_MAT=new THREE.MeshStandardMaterial({color:'#8fae8a',roughness:.6});
 // 包み紙は真ん中の束から1枚ずつ取って使う
-const BOTTLE={ketchup:['#c8281c','#c8281c','ケチャップ'],mayo:['#f3efe4','#e04a3a','マヨネーズ'],mustard:['#e8b417','#e8b417','マスタード'],tartar:['#efe9cf','#2f9e44','タルタル']};
+const BOTTLE={ketchup:['#c8281c','#c8281c','ケチャップ'],mayo:['#f3efe4','#e04a3a','マヨネーズ'],mustard:['#e8b417','#e8b417','マスタード'],tartar:['#efe9cf','#2f9e44','タルタル'],chili:['#8e2c10','#3a3a3a','チリ']};
 const BMAT={},bmat=(c,r)=>BMAT[c+r]||(BMAT[c+r]=new THREE.MeshStandardMaterial({color:c,roughness:r}));
 function bottleMesh(k){const [col,cap,nm]=BOTTLE[k],g=new THREE.Group();
   const b=cylM(.03,.032,.16,bmat(col,.25),20);b.position.y=.08;g.add(b);
@@ -1237,7 +1291,7 @@ function bottleMesh(k){const [col,cap,nm]=BOTTLE[k],g=new THREE.Group();
   lb.position.set(0,.08,.0325);g.add(lb);g.scale.setScalar(1.5);return shade(g);}
 // ソース立て（3本）
 box(.66,.02,.24,STEEL_D,COLX[0],.95,ROWB);
-const bottleStands=SAUCES.map((k,i)=>{const x=COLX[0]+(i-1.5)*.15;const m=bottleMesh(k);m.position.set(x,.96,ROWB);scene.add(m);hitBox(.15,.5,.42,x,1.15,ROWB,'sauce',i);return m;});
+const bottleStands=SAUCES.map((k,i)=>{const x=COLX[0]+(i-(SAUCES.length-1)/2)*.13;const m=bottleMesh(k);m.position.set(x,.96,ROWB);scene.add(m);hitBox(.13,.5,.42,x,1.15,ROWB,'sauce',i);return m;});
 const PSX=-1,PSZ=-2.6;
 box(.38,.012,.38,STEEL_D,PSX,.946,PSZ);
 for(let j=0;j<24;j++)box(.32,.002,.32,WRAP,PSX+rnd(-.008,.008),.953+j*.0022,PSZ).rotation.y=rnd(-.06,.06);
@@ -1254,7 +1308,17 @@ const ghost=new THREE.Mesh(new THREE.RingGeometry(.07,.09,32),new THREE.MeshBasi
 
 // 包んだバーガー（紙で包まれ、中身のシールが貼られる）
 const wrapGeoCache={};
+function wrappedDog(layers){
+  const g=new THREE.Group();const w=mk(geoOf('hdwrap',()=>new THREE.SphereGeometry(1,28,12,0,Math.PI*2,0,Math.PI/2)),WRAP);w.scale.set(.14,.072,.062);g.add(w);
+  box(.27,.004,.12,WRAP,0,.002,0,g);
+  const chi=layers.includes('chili'),name=chi?'チリ':'ドッグ';
+  const st=sticker('dog:'+name,.06,.06,96,(c,w2,h2)=>{c.fillStyle=chi?'#8e2c10':'#d63b2b';c.beginPath();c.arc(w2/2,h2/2,w2/2-2,0,7);c.fill();c.fillStyle='#fbf1dc';c.textAlign='center';c.textBaseline='middle';
+    c.font=`800 ${w2*(name.length>2?.26:.32)}px ${FONT}`;c.fillText(name,w2/2,h2/2);});
+  st.rotation.x=-Math.PI/2;st.position.set(.03,.0735,0);g.add(st);
+  return shade(g);
+}
 function wrappedMesh(layers){
+  if(isDog(layers))return wrappedDog(layers);
   let h=0;layers.forEach(k=>{h+=layerMesh(k).h;});h=Math.max(.09,h);
   const key=Math.round(h*200);
   const geo=wrapGeoCache[key]||(wrapGeoCache[key]=lathe([[0,0],[.12,0],[.138,.006],[.142,h*.3],[.132,h*.72],[.1,h*.94],[.05,h+.006],[0,h+.01]],36,.035,.16));
@@ -1340,7 +1404,7 @@ function updateSmoke(dt){smoke.forEach(p=>{if(p.life<=0)return;p.life-=dt;const 
    見えたり消えたり動いたりする物（在庫の山・グリルのふた・料理・ラベル・椅子など）は除外する */
 function batchStatic(){
   if(!THREE.BufferGeometryUtils)return;
-  const DYN=new Set([].concat(grillMesh,fryLockM,potatoBags,nuggetBags,Object.values(binLids),cupStack,streams,...Object.values(piles),slotParts.map(p=>p.glow),...baskets.map(b=>b.bub),tickets,[wboard,ghost,sky]));
+  const DYN=new Set([].concat(grillMesh,grillSaus,fryLockM,potatoBags,nuggetBags,Object.values(binLids),cupStack,streams,...Object.values(piles),slotParts.map(p=>p.glow),...baskets.map(b=>b.bub),tickets,[wboard,ghost,sky]));
   scene.updateMatrixWorld(true);
   const pick=[];
   const ok=m=>m.isMesh&&!m.isSkinnedMesh&&!m.userData.hit&&!m.userData.lab&&!Array.isArray(m.material)&&m.visible&&!DYN.has(m)&&m.geometry&&m.geometry.attributes.position;
@@ -1442,7 +1506,7 @@ function drawBinLabels(){binLabels.forEach(({lab,k})=>{
 let tables=TBL.map(()=>null),tableTray=TBL.map(()=>null),tableDirty=true;
 let grill,fry,drinks,boards,spots,slots,customers=[],held=null,phase='title',dayT=0,spawnT=3,DS;
 function resetStations(){
-  grill=Array.from({length:6},()=>({cook:null}));
+  grill=Array.from({length:6},()=>({cook:null,k:'patty'}));
   fry=[{t:null,kind:'fries'},{t:null,kind:'fries'}];drinks=DRINKS.map(k=>({t:null,kind:k}));
   boards=[];
   spots=SPOTS.map(()=>({item:null,dirty:true}));
@@ -1462,6 +1526,8 @@ function itemName(it){
   if(!it)return 'なし';
   switch(it.type){
     case 'patty':return {patty_raw:it.cook>0?'生焼けパティ':'生パティ',patty:'焼けたパティ',patty_burnt:'焦げたパティ'}[pattyState(it.cook)];
+    case 'sausage':return {sausage_raw:it.cook>0?'生焼けソーセージ':'生ソーセージ',sausage:'焼けたソーセージ',sausage_burnt:'焦げたソーセージ'}[sausState(it.cook)];
+    case 'dbun':return 'ホットドッグバンズ';
     case 'burger':return menuName(it.layers)+'（包装済み）';
     case 'fries':case 'rings':case 'nuggets':case 'fishfry':return (it.burnt?'焦げた':'')+SIDE_N[it.type];
     case 'fish':return '魚の切り身（生）';
@@ -1469,7 +1535,7 @@ function itemName(it){
     case 'potato':return '冷凍ポテト';case 'nugget':return '冷凍ナゲット';
     case 'bottle':return LAYER[it.sauce].n+'のボトル';
     case 'tbag':return `紙袋（${it.items.length}個）`;case 'tray':return `トレー（${it.items.length}個）`;
-    case 'stack':return it.layers.length<=2?'バンズ':menuName(it.layers)+'（作りかけ）';
+    case 'stack':return it.layers.length<=2?(isDog(it.layers)?'ホットドッグバンズ':'バンズ'):menuName(it.layers)+'（作りかけ）';
     case 'paper':return '包み紙';
     case 'box':return `段ボール（${supplyName(it.k)} ${it.n}個）`;
     case 'litter':return `ゴミ（${it.n||1}個）`;
@@ -1479,12 +1545,14 @@ function itemName(it){
 }
 function refreshHeld(){
   if(heldMesh){camera.remove(heldMesh);disposeTree(heldMesh);heldMesh=null;}
-  if(held){heldMesh=shade(itemMesh(held),false);heldMesh.position.set(.32,-.3,-.62);heldMesh.rotation.set(.35,-.4,0);heldMesh.scale.setScalar(held.type==='box'?.62:held.type==='dtray'?.6:held.type==='litter'?1:held.type==='tray'?.6:['burger','bun','stack','tbag'].includes(held.type)?.8:held.type==='bottle'?.75:held.type==='paper'?.7:1.1);camera.add(heldMesh);}
+  if(held){heldMesh=shade(itemMesh(held),false);heldMesh.position.set(.32,-.3,-.62);heldMesh.rotation.set(.35,-.4,0);heldMesh.scale.setScalar(held.type==='box'?.62:held.type==='dtray'?.6:held.type==='litter'?1:held.type==='tray'?.6:['burger','bun','dbun','stack','tbag'].includes(held.type)?.8:held.type==='bottle'?.75:held.type==='paper'?.7:1.1);camera.add(heldMesh);}
   $('#held').innerHTML='<small>手元</small>'+itemName(held);
 }
-const layerOf=h=>h.type==='patty'?pattyState(h.cook):h.type==='bun'?'bun_m':h.type==='fish'?'fish_raw':h.type==='fishfry'?(h.burnt?'fish_burnt':'fish'):h.type;
+const layerOf=h=>h.type==='patty'?pattyState(h.cook):h.type==='sausage'?sausState(h.cook):h.type==='bun'?'bun_m':h.type==='fish'?'fish_raw':h.type==='fishfry'?(h.burnt?'fish_burnt':'fish'):h.type;
 function layerToItem(k){
   if(k==='bun_b'||k==='bun_t'||k==='bun_m')return {type:'bun'};
+  if(k==='hd_b'||k==='hd_t')return {type:'dbun'};
+  if(k.startsWith('sausage'))return {type:'sausage',cook:k==='sausage'?T_DONE()+.5:k==='sausage_raw'?0:T_BURN()+1};
   if(k==='patty')return {type:'patty',cook:T_DONE()+.5};
   if(k==='patty_raw')return {type:'patty',cook:0};
   if(k==='patty_burnt')return {type:'patty',cook:T_BURN()+1};
@@ -1494,11 +1562,13 @@ function layerToItem(k){
 
 /* ---------- 注文 ---------- */
 function menuName(L){
+  const chi=L.includes('chili')?'チリ':'';
+  if(isDog(L))return chi?'チリドッグ':'ホットドッグ';
   const p=L.filter(k=>k.startsWith('patty')).length,ch=L.includes('cheese'),bc=L.includes('bacon');
   let n=(bc?'ベーコン':'')+(p>=2?'ダブル':'')+(ch?'チーズ':'');
   if(!n&&['lettuce','tomato','onion'].every(v=>L.includes(v)))n='デラックス';
-  if(L.some(k=>k.startsWith('fish')))return (L.includes('bun_m')?'タワー':'')+'フィッシュバーガー';
-  return (L.includes('bun_m')?'タワー':'')+(n||'ハン')+'バーガー';
+  if(L.some(k=>k.startsWith('fish')))return (L.includes('bun_m')?'タワー':'')+chi+'フィッシュバーガー';
+  return (L.includes('bun_m')?'タワー':'')+chi+(n||(chi?'':'ハン'))+'バーガー';
 }
 const pickW=(arr,w)=>{let r=grng()*w.reduce((a,b)=>a+b,0);for(let i=0;i<arr.length;i++){r-=w[i];if(r<0)return arr[i];}return arr[0];};
 // 注文は解禁済みのメニューだけから作る
@@ -1509,18 +1579,26 @@ function genBurger(){
   if(!easy&&has('double')&&grng()<Math.min(.35,.15+S.day*.03)){if(grng()<.5)L.push('bun_m');L.push('patty');if(ch&&grng()<.5)L.push('cheese');}
   if(has('bacon')&&grng()<(easy?.2:.45))L.push('bacon');
   if(has('veg'))['lettuce','tomato','onion'].forEach(v=>{if(grng()<(easy?.25:.45))L.push(v);});
-  const pool=['ketchup'].concat(has('sauce')?['mayo','mustard']:[]);
+  const pool=['ketchup'].concat(has('sauce')?['mayo','mustard']:[],has('chili')?['chili']:[]);
   const sr=grng(),ns=Math.min(pool.length,easy?(sr<.55?0:1):(sr<.25?0:sr<.8?1:2));
   for(let j=0;j<ns;j++)L.push(pool.splice(grng()*pool.length|0,1)[0]);
   L.push('bun_t');return L;
 }
+function genHotdog(){
+  const L=['hd_b','sausage'];
+  if(!isEasy()&&has('veg')&&grng()<.25)L.push('onion');
+  L.push('ketchup','mustard');if(has('chili')&&grng()<.45)L.push('chili');
+  L.push('hd_t');return L;
+}
+const genItem=()=>has('hotdog')&&grng()<(isEasy()?.22:.3)?genHotdog():genBurger();
 function burgerPrice(L){
+  if(isDog(L))return 280+(L.includes('onion')?40:0)+L.filter(k=>SAUCES.includes(k)).length*20+(L.includes('chili')?60:0);
   const p=L.filter(k=>k==='patty').length,c=L.filter(k=>k==='cheese').length,v=L.filter(k=>['lettuce','tomato','onion'].includes(k)).length;
-  return (L.includes('fish')?50:0)+300+Math.max(0,p-1)*150+c*50+v*40+(L.includes('bacon')?100:0)+(L.includes('bun_m')?60:0)+L.filter(k=>SAUCES.includes(k)).length*20;
+  return (L.includes('fish')?50:0)+300+Math.max(0,p-1)*150+c*50+v*40+(L.includes('bacon')?100:0)+(L.includes('bun_m')?60:0)+L.filter(k=>SAUCES.includes(k)).length*20+(L.includes('chili')?60:0);
 }
 function genOrder(){
   const hard=isHard();
-  const burgers=[genBurger()];if(hard&&grng()<.4)burgers.push(genBurger());
+  const burgers=[genItem()];if(hard&&grng()<.4)burgers.push(genItem());
   const two=(list,arr,w)=>{if(!arr.length)return;const a=pickW(arr,w);list.push(a);if(hard&&grng()<.4){const rest=arr.filter(x=>x!==a);if(rest.length)list.push(pickW(rest,rest.map(()=>1)));}};
   const sides=[],drinks=[];
   const SW0={fries:.5,rings:.25,nuggets:.25},DW0={cola:.3,melon:.2,oolong:.18,vanilla:.16,choco:.16};
@@ -1757,17 +1835,17 @@ function bin(i){
   const k=BINS[i];
   if(!ingOk(k)){toast(lockMsg(ING[k],ING_REQ[k]));return;}
   if(held&&held.type==='box')return unpackBox(k);
-  if(held){if(held.type===k&&(k!=='patty'||held.cook===0)){if(!CFG.infStock)S.stock[k]++;held=null;sfx('place');drawBinLabels();return;}return busy();}
+  if(held){if(held.type===k&&((k!=='patty'&&k!=='sausage')||held.cook===0)){if(!CFG.infStock)S.stock[k]++;held=null;sfx('place');drawBinLabels();return;}return busy();}
   if(!hasStock(k)){toast(`${ING[k]}の在庫切れ！発注端末で仕入れよう`,'bad');sfx('bad');return;}
-  useStock(k);held=k==='patty'?{type:'patty',cook:0}:{type:k};sfx('pick');drawBinLabels();
+  useStock(k);held=k==='patty'||k==='sausage'?{type:k,cook:0}:{type:k};sfx('pick');drawBinLabels();
 }
 function grillAct(i){
   if(i>=grillCount()){toast('「グリル拡張」で使えるようになります');return;}
   const g=grill[i];
   if(g.cook===null){
-    if(held&&held.type==='patty'){g.cook=held.cook;held=null;sfx('place');}
-    else toast(held?'グリルにはパティだけ置けます':'冷蔵庫からパティを持ってこよう');
-  }else{if(held)return busy();held={type:'patty',cook:g.cook};g.cook=null;sfx('pick');}
+    if(held&&(held.type==='patty'||held.type==='sausage')){g.cook=held.cook;g.k=held.type;held=null;sfx('place');}
+    else toast(held?'グリルにはパティかソーセージだけ置けます':'冷蔵ケースからパティかソーセージを持ってこよう');
+  }else{if(held)return busy();held={type:g.k==='sausage'?'sausage':'patty',cook:g.cook};g.cook=null;sfx('pick');}
 }
 function fryAct(i){
   const f=fry[i];
@@ -1808,14 +1886,15 @@ function boardAct(i){
   }
   if(!b.layers.length){
     if(!held||held.type==='bottle'){toast('まずバンズを置こう');return;}
-    if(held.type!=='bun'){toast('まずバンズを置こう（上下セットで置かれます）');return;}
-    b.layers=['bun_b','bun_t'];held=null;sfx('place');return;
+    if(!isBunT(held.type)){toast('まずバンズを置こう（バーガーは上下セット、ホットドッグはドッグバンズ）');return;}
+    b.layers=pairOf(held.type);held=null;sfx('place');return;
   }
   if(!held){
     if(b.layers.length<=2){toast('具材を挟んでから包もう');return;}
     b.done=true;sfx('good');toast(`${menuName(b.layers)}を包みました`);return;
   }
   if(held.type==='bottle'){b.layers.splice(b.layers.length-1,0,held.sauce);sfx('squirt');return;}
+  if(held.type==='dbun'){toast('ホットドッグバンズは挟めません。空いている包み紙に置こう');return;}
   if(['burger','fries','rings','nuggets','drink','stack'].includes(held.type)){toast(held.type==='stack'?'作りかけは空いている包み紙か、好きな場所に置こう':'完成品は受け渡し口へ');return;}
   b.layers.splice(b.layers.length-1,0,layerOf(held));held=null;sfx('place');
 }
@@ -1827,7 +1906,7 @@ function boardUndo(i){
   if(b.layers.length>2&&SAUCES.includes(b.layers[b.layers.length-2])){b.layers.splice(b.layers.length-2,1);b.dirty=true;sfx('place');toast('ソースを拭き取りました');return;}
   if(held)return busy();
   if(b.layers.length>2)held=layerToItem(b.layers.splice(b.layers.length-2,1)[0]);
-  else{held={type:'bun'};b.layers=[];}
+  else{held=bunItemOf(b.layers);b.layers=[];}
   b.dirty=true;sfx('pick');
 }
 function sauceAct(i){
@@ -1836,7 +1915,7 @@ function sauceAct(i){
     if(held.sauce!==k){toast(`${LAYER[held.sauce].n}は左から${SAUCES.indexOf(held.sauce)+1}番目の場所へ`);return;}
     held=null;bottleStands[i].visible=true;sfx('place');return;}
   if(held)return busy();
-  if(!sauceOk(k)){toast(lockMsg(LAYER[k].n,[k==='tartar'?'fish':'sauce']));return;}
+  if(!sauceOk(k)){toast(lockMsg(LAYER[k].n,sauceReq(k)));return;}
   if(!bottleStands[i].visible){toast(`${LAYER[k].n}のボトルはどこかに置いてあります`);return;}
   held={type:'bottle',sauce:k};bottleStands[i].visible=false;sfx('pick');
 }
@@ -1847,6 +1926,7 @@ function freeSize(it){
   if(it.type==='box')return [.42,.3,.32];
   if(it.type==='litter')return [.2,.1,.2];
   if(it.type==='dtray')return [.44,.14,.34];
+  if((it.type==='stack'||it.type==='burger')&&isDog(it.layers))return [.3,.13,.16];
   if(it.type==='stack'||it.type==='burger'){let h=0;it.layers.forEach(k=>{h+=k==='bun_t'?BUN_H:(k==='bun_b'||k==='bun_m')?BUNB_H:.02;});return [.28,h+.03,.28];}
   if(it.type==='bottle')return [.12,.36,.12];
   if(it.type==='drink'||isSide(it.type))return [.16,.24,.16];
@@ -1872,7 +1952,7 @@ function placeOnSurface(){
   const u=hover.userData,[x0,x1,z0,z1]=u.b,m=.1;
   const x=Math.min(x1-m,Math.max(x0+m,hoverPt.x)),z=Math.min(z1-m,Math.max(z0+m,hoverPt.z));
   if(held.type!=='box'&&freeItems.filter(f=>f.item.type!=='box').length>=60){toast('置ける物は60個までです。片付けよう','bad');return;}
-  const it=held.type==='bun'?{type:'stack',layers:['bun_b','bun_t']}:held;
+  const it=isBunT(held.type)?{type:'stack',layers:pairOf(held.type)}:held;
   addFree(it,x,u.top,z);held=null;sfx('place');
 }
 function freeAct(id){
@@ -1883,13 +1963,13 @@ function freeAct(id){
     return busy();
   }
   if(isBox(held)&&isProduct(it)){if(held.items.length>=6){toast('これ以上入りません');return;}held.items.push(it);removeFree(f);sfx('pick');return;}
-  if(it.type==='paper'&&held&&(held.type==='bun'||held.type==='stack')){
-    f.item={type:'stack',layers:held.type==='bun'?['bun_b','bun_t']:held.layers.slice(),paper:true};held=null;rebuildFree(f);sfx('place');return;}
+  if(it.type==='paper'&&held&&(isBunT(held.type)||held.type==='stack')){
+    f.item={type:'stack',layers:isBunT(held.type)?pairOf(held.type):held.layers.slice(),paper:true};held=null;rebuildFree(f);sfx('place');return;}
   if(it.type==='stack'&&it.paper&&!held){
-    if(it.layers.length<=2){held={type:'bun'};f.item={type:'paper'};rebuildFree(f);sfx('pick');return;}
+    if(it.layers.length<=2){held=bunItemOf(it.layers);f.item={type:'paper'};rebuildFree(f);sfx('pick');return;}
     held={type:'stack',layers:it.layers.slice(),paper:true};removeFree(f);sfx('pick');return;}
   if(it.type==='stack'){
-    if(!held){held=it.layers.length<=2?{type:'bun'}:{type:'stack',layers:it.layers.slice()};removeFree(f);sfx('pick');return;}
+    if(!held){held=it.layers.length<=2?bunItemOf(it.layers):{type:'stack',layers:it.layers.slice()};removeFree(f);sfx('pick');return;}
     if(held.type==='bottle'){it.layers.splice(it.layers.length-1,0,held.sauce);rebuildFree(f);sfx('squirt');return;}
     if(!INS.includes(held.type)){toast(held.type==='paper'?'包むときは T キー':'これは挟めません');return;}
     it.layers.splice(it.layers.length-1,0,layerOf(held));held=null;rebuildFree(f);sfx('place');return;
@@ -1919,7 +1999,7 @@ function freeUndo(id){
   const f=freeById(id);if(!f||f.item.type!=='stack')return;const L=f.item.layers;
   if(L.length>2&&SAUCES.includes(L[L.length-2])){L.splice(L.length-2,1);rebuildFree(f);sfx('place');toast('ソースを拭き取りました');return;}
   if(held)return busy();
-  if(L.length>2){held=layerToItem(L.splice(L.length-2,1)[0]);rebuildFree(f);}else if(f.item.paper){held={type:'bun'};f.item={type:'paper'};rebuildFree(f);}else{held={type:'bun'};removeFree(f);}
+  if(L.length>2){held=layerToItem(L.splice(L.length-2,1)[0]);rebuildFree(f);}else if(f.item.paper){held=bunItemOf(L);f.item={type:'paper'};rebuildFree(f);}else{held=bunItemOf(L);removeFree(f);}
   sfx('pick');
 }
 function boxStackAct(type){
@@ -1993,7 +2073,11 @@ function judge(o,s,r){
   if(all.includes('patty_burnt'))hit(-.5,1,'パティが焦げていた');
   if(all.includes('fish_raw')){hit(-.6,1,'魚が生だった');refund=true;}
   if(all.includes('fish_burnt'))hit(-.5,1,'魚が焦げていた');
-  const norm=a=>a.map(k=>k.startsWith('patty')?'patty':k.startsWith('fish')?'fish':k).filter(k=>k!=='bun_b'&&k!=='bun_t');
+  if(all.includes('sausage_raw')){hit(-.6,1,'ソーセージが生焼けだった');refund=true;}
+  if(all.includes('sausage_burnt'))hit(-.5,1,'ソーセージが焦げていた');
+  const norm=a=>{const r=a.map(k=>k.startsWith('patty')?'patty':k.startsWith('fish')?'fish':k.startsWith('sausage')?'sausage':k).filter(k=>k!=='bun_b'&&k!=='bun_t'&&k!=='hd_t');
+    // ホットドッグはソースをかける順番は問わない
+    return r[0]==='hd_b'?r.filter(k=>!SAUCES.includes(k)).concat(r.filter(k=>SAUCES.includes(k)).sort()):r;};
   const rem=s.placed.burgers.map(norm);
   o.burgers.forEach(L=>{
     const B=norm(L),k=rem.findIndex(a=>a.join()===B.join());if(k>=0){rem.splice(k,1);return;}
@@ -2198,12 +2282,12 @@ function hintFor({kind,idx}){
   switch(kind){
     case 'bin':{const k=BINS[idx];if(!ingOk(k))return `${ING[k]}<small>未解禁（発注端末の「メニュー」）</small>`;
       if(held&&held.type==='box')return held.k===k?E+`段ボールを開けて${ING[k]}を補充<small>+${held.n} 個</small>`:`${ING[k]}の場所<small>この箱は${supplyName(held.k)}</small>`;
-      if(held&&held.type===k&&(k!=='patty'||held.cook===0))return E+`${ING[k]}を戻す`;
+      if(held&&held.type===k&&((k!=='patty'&&k!=='sausage')||held.cook===0))return E+`${ING[k]}を戻す`;
       return held?`${ING[k]}<small>手がふさがっています</small>`:E+`${ING[k]}を取る<small>在庫 ${stockTxt(k)}</small>`;}
     case 'grill':{if(idx>=grillCount())return 'グリル（未拡張）';const g=grill[idx];
-      if(g.cook===null)return held&&held.type==='patty'?E+'パティを焼く':'グリル<small>パティを置いて焼く</small>';
+      if(g.cook===null)return held&&(held.type==='patty'||held.type==='sausage')?E+`${held.type==='sausage'?'ソーセージ':'パティ'}を焼く`:'グリル<small>パティかソーセージを置いて焼く</small>';
       const st=pattyState(g.cook);const pct=Math.min(100,Math.round(g.cook/T_DONE()*100));
-      return E+'パティを取る'+`<small>${st==='patty_raw'?`焼いています ${pct}%`:st==='patty'?'ちょうど良い焼き加減':'焦げています！'}</small>`;}
+      return E+`${g.k==='sausage'?'ソーセージ':'パティ'}を取る`+`<small>${st==='patty_raw'?`焼いています ${pct}%`:st==='patty'?'ちょうど良い焼き加減':'焦げています！'}</small>`;}
     case 'fry':{const f=fry[idx];
       if(f.t===null){const map={potato:'ポテト',nugget:'ナゲット',onion:'オニオンリング',fish:'白身魚フライ'};
         if(held&&map[held.type])return E+`${map[held.type]}を揚げる`;
@@ -2220,10 +2304,11 @@ function hintFor({kind,idx}){
     case 'board':{const b=boards[idx],Q='<kbd>Q</kbd> ';
       if(held&&held.type==='bottle'&&!b.layers.length)return 'まずバンズを置こう';
       if(b.done)return held?'包んだバーガーを先に取る':E+`${menuName(b.layers)}を取る<small>包装済み</small>`;
-      if(!b.layers.length)return held&&held.type==='bun'?E+'バンズを置く<small>上下セットで置かれます</small>':`包み紙 ${idx+1}<small>バンズを置いて具材を挟む</small>`;
+      if(!b.layers.length)return held&&isBunT(held.type)?E+(held.type==='dbun'?'ホットドッグバンズを置く<small>焼いたソーセージを挟もう</small>':'バンズを置く<small>上下セットで置かれます</small>'):`包み紙 ${idx+1}<small>バンズを置いて具材を挟む</small>`;
       const n=b.layers.length-2,undoTxt=n>0?(SAUCES.includes(b.layers[n])?Q+'ソースを拭き取る':Q+'最後の具材を戻す'):Q+'バンズを取る';
       if(!held)return (n>0?E+`包んで完成<small>${menuName(b.layers)}・${undoTxt}</small>`:`具材を挟もう<small>${undoTxt}</small>`);
       if(held.type==='bun')return E+`中バンズを挟む<small>${undoTxt}</small>`;
+      if(held.type==='dbun')return `包み紙 ${idx+1}<small>ホットドッグバンズは挟めません</small>`;
       if(['burger','fries','rings','nuggets','drink','stack'].includes(held.type))return `包み紙 ${idx+1}<small>完成品は受け渡し口へ</small>`;
       if(held.type==='bottle')return E+`${LAYER[held.sauce].n}をかける<small>${undoTxt}</small>`;
       return E+`${itemName(held)}を挟む<small>${undoTxt}</small>`;}
@@ -2240,8 +2325,8 @@ function hintFor({kind,idx}){
     case 'traystack':return held?(held.type==='tray'&&!held.items.length?E+'トレーを戻す':'トレー<small>手がふさがっています</small>'):E+'トレーを取る<small>置いて商品を載せ、イートインの席まで運ぶ</small>';
     case 'sauce':{const k=SAUCES[idx];if(!sauceOk(k)&&!(held&&held.type==='bottle'))return `${LAYER[k].n}<small>未解禁（発注端末の「メニュー」）</small>`;
       if(held&&held.type==='bottle')return held.sauce===k?E+`${LAYER[k].n}を戻す`:`${LAYER[k].n}の場所<small>持っているのは${LAYER[held.sauce].n}</small>`;
-      return held?`${LAYER[k].n}<small>手がふさがっています</small>`:E+`${LAYER[k].n}を持つ<small>包み紙のバーガーにかけられます</small>`;}
-    case 'surface':return held?E+(held.type==='bun'?'バンズを置く<small>ここでバーガーを作れます</small>':`${itemName(held)}を置く`):'';
+      return held?`${LAYER[k].n}<small>手がふさがっています</small>`:E+`${LAYER[k].n}を持つ<small>作りかけのバーガーやホットドッグにかけられます</small>`;}
+    case 'surface':return held?E+(isBunT(held.type)?(held.type==='dbun'?'ホットドッグバンズを置く<small>ここでホットドッグを作れます</small>':'バンズを置く<small>ここでバーガーを作れます</small>'):`${itemName(held)}を置く`):'';
     case 'paperstack':return held?(held.type==='paper'?E+'包み紙を戻す':'包み紙<small>手がふさがっています</small>'):E+'包み紙を取る<small>作りかけのバーガーを包めます</small>';
     case 'free':{const f=freeById(idx);if(!f)return '';
       if(f.item.type==='litter')return held&&held.type!=='litter'?'ゴミ<small>手がふさがっています</small>':E+'ゴミを拾う'+(held?`<small>手に ${held.n} 個（5個まで）</small>`:'<small>続けて拾うと手に重ねられます</small>');
@@ -2249,10 +2334,10 @@ function hintFor({kind,idx}){
       const it=f.item,Q='<kbd>Q</kbd> ',T='<kbd>T</kbd> ';
       if(isBox(it)){const nm=itemName(it);if(held&&isProduct(held))return E+`${itemName(held)}を${it.type==='tbag'?'入れる':'載せる'}<small>${nm}</small>`;return held?`${nm}<small>手がふさがっています</small>`:E+`${nm}を持つ<small>${it.items.length?Q+'1つ取り出す':''}</small>`;}
       if(isBox(held)&&isProduct(it))return E+`${itemName(it)}を${held.type==='tbag'?'紙袋に入れる':'トレーに載せる'}`;
-      if(it.type==='paper'&&held&&(held.type==='bun'||held.type==='stack'))return E+`包み紙の上に${held.type==='bun'?'バンズ':itemName(held)}を置く`;
+      if(it.type==='paper'&&held&&(isBunT(held.type)||held.type==='stack'))return E+`包み紙の上に${isBunT(held.type)?itemName(held):itemName(held)}を置く`;
       if(it.type==='paper'&&!held)return E+'包み紙を取る<small>バンズを持ってくると、この上でバーガーを作れます</small>';
       if(it.type==='stack'&&it.paper&&!held){const n=it.layers.length-2;return n>0?T+`包んで完成<small>${menuName(it.layers)}・${E}持ち上げる・${SAUCES.includes(it.layers[n])?Q+'ソースを拭き取る':Q+'最後の具材を戻す'}</small>`:E+'バンズを取る<small>具材を持ってきて挟もう</small>';}
-      if(it.type==='stack'){const n=it.layers.length-2,nm=n>0?menuName(it.layers)+'（作りかけ）':'バンズ',ut=n>0?(SAUCES.includes(it.layers[n])?Q+'ソースを拭き取る':Q+'最後の具材を戻す'):'';
+      if(it.type==='stack'){const n=it.layers.length-2,nm=n>0?menuName(it.layers)+'（作りかけ）':itemName(bunItemOf(it.layers)),ut=n>0?(SAUCES.includes(it.layers[n])?Q+'ソースを拭き取る':Q+'最後の具材を戻す'):'';
         if(!held)return E+`${nm}を持つ<small>${ut||'具材を持ってきて挟もう'}</small>`;
         if(held.type==='paper')return n>0?T+`包む<small>${nm}</small>`:'具材を挟んでから包もう';
         if(held.type==='bottle')return E+`${LAYER[held.sauce].n}をかける<small>${ut}</small>`;
@@ -2284,7 +2369,7 @@ function drawRail(){
   const html=slots.map((s,i)=>[s,i]).filter(([s])=>s.c&&s.c.order).sort((a,b)=>a[0].c.order.no-b[0].c.order.no).map(([s,i])=>{const c=s.c;const o=c.order,r=Math.max(0,c.pat/c.maxPat);
     const col=r>.5?'var(--pickle)':r>.25?'var(--mustard)':'var(--ketchup)';
     const P=s.placed;
-    const bs=o.burgers.map((L,bi)=>{const chips=L.slice().reverse().map(k=>`<div class="chip ${k==='bun_t'?'top':''}"><span style="background:${LAYER[k].c}"></span>${LAYER[k].n}</div>`).join('');
+    const bs=o.burgers.map((L,bi)=>{const chips=L.filter(k=>k!=='hd_t').reverse().map(k=>`<div class="chip ${k==='bun_t'?'top':''}"><span style="background:${LAYER[k].c}"></span>${LAYER[k].n}</div>`).join('');
       return `${o.burgers.length>1?`<div class="t-bn ${P.burgers.length>bi?'done':''}">バーガー${bi+1}：${menuName(L)}</div>`:''}<div class="stack">${chips}${P.burgers.length>bi?'<span class="ok-stamp">OK</span>':''}</div>`;}).join('');
     const ex=o.sides.map((k,j)=>`<span class="ex ${P.sides.length>j?'done':''}">${SIDE_N[k]}</span>`).join('')+o.drinks.map((k,j)=>`<span class="ex ${P.drinks.length>j?'done':''}">${DRINK_N[k]}</span>`).join('');
     const mode=(o.mode==='eatin'?`<span class="t-mode">イートイン 席${o.table+1}</span>`:o.mode==='takeout'?'<span class="t-mode take">テイクアウト</span>':'')+(o.nz?'<span class="t-mode t-nz">迷惑客</span>':'');
@@ -2457,9 +2542,9 @@ function updateStations(dt){
 }
 function drawStations(time,dt){
   const blink=Math.sin(time*.012)>0;
-  grill.forEach((g,i)=>{const m=grillMesh[i],d=grillDot[i];
+  grill.forEach((g,i)=>{const sk=g.k==='sausage',m=sk?grillSaus[i]:grillMesh[i],d=grillDot[i];(sk?grillMesh[i]:grillSaus[i]).visible=false;
     if(g.cook===null){m.visible=false;d.visible=false;return;}
-    m.visible=true;m.material.color.copy(pattyColor(g.cook));const k=Math.min(1,g.cook/T_DONE());m.scale.set(1-.08*k,1+.25*k,1-.08*k);
+    m.visible=true;if(sk){m.material.color.copy(sausColor(g.cook));m.rotation.x=Math.min(1,g.cook/T_DONE())*Math.PI;}else{m.material.color.copy(pattyColor(g.cook));const k=Math.min(1,g.cook/T_DONE());m.scale.set(1-.08*k,1+.25*k,1-.08*k);}
     const st=pattyState(g.cook);d.visible=st!=='patty_raw'||g.cook>T_DONE()*.6;
     d.material.color.set(st==='patty_raw'?'#f2b134':st==='patty'?'#7cc35a':'#d63b2b');if(st==='patty_burnt')d.visible=blink;
     if(dt&&Math.random()<(st==='patty_burnt'?7:2.5)*dt)emitSmoke(GX(i),1.1,-5.55,st==='patty_burnt');});
@@ -2560,14 +2645,14 @@ function predRun(key,fn){MP.predCur=MP.actSeq;predMark(key);try{fn();}catch(e){}
 function sendAct(a){if(!MP.room)return;MP.lastActAt=performance.now();MP.acts.push([++MP.actSeq].concat(a));const ak=MP.myAck||0;MP.acts=MP.acts.filter(x=>x[0]>ak).slice(-24);MP.room.presence({a:MP.acts}).catch(()=>{});if(MP.room.flush)MP.room.flush();}
 
 // --- 符号化（presence は 4KB までなので短く） ---
-const LC={fish:'f',fish_raw:'g',fish_burnt:'h',tartar:'q',bun_b:'b',bun_t:'t',bun_m:'m',patty:'p',patty_raw:'r',patty_burnt:'x',cheese:'c',lettuce:'l',tomato:'o',onion:'n',bacon:'a',ketchup:'k',mayo:'y',mustard:'u'};
+const LC={fish:'f',fish_raw:'g',fish_burnt:'h',tartar:'q',bun_b:'b',bun_t:'t',bun_m:'m',patty:'p',patty_raw:'r',patty_burnt:'x',cheese:'c',lettuce:'l',tomato:'o',onion:'n',bacon:'a',ketchup:'k',mayo:'y',mustard:'u',chili:'i',hd_b:'d',hd_t:'e',sausage:'s',sausage_raw:'w',sausage_burnt:'z'};
 const LD=Object.fromEntries(Object.entries(LC).map(([k,v])=>[v,k]));
 const encL=L=>L.map(k=>LC[k]||'').join(''),decL=s=>[...String(s||'')].map(c=>LD[c]).filter(Boolean);
-const IC={bun:'B',cheese:'C',lettuce:'L',tomato:'T',onion:'O',bacon:'A',paper:'W',potato:'Q',nugget:'H',fish:'E'},ID=Object.fromEntries(Object.entries(IC).map(([k,v])=>[v,k]));
-const STK=['patty','bun','cheese','lettuce','tomato','onion','bacon','potato','cup','nugget','fish'];
-function encI(it){if(!it)return '';switch(it.type){case 'box':return '#'+STK.indexOf(it.k)+':'+it.n;case 'litter':return '!'+(it.n||1);case 'dtray':return '%';case 'patty':return 'P'+Math.round(it.cook*10);case 'fries':return it.burnt?'G':'F';case 'rings':return it.burnt?'J':'I';case 'nuggets':return it.burnt?'V':'U';case 'fishfry':return it.burnt?'N':'M';case 'drink':return 'D'+Math.max(0,DRINKS.indexOf(it.kind));case 'bottle':return 'S'+SAUCES.indexOf(it.sauce);
+const IC={bun:'B',cheese:'C',lettuce:'L',tomato:'T',onion:'O',bacon:'A',paper:'W',potato:'Q',nugget:'H',fish:'E',dbun:'d'},ID=Object.fromEntries(Object.entries(IC).map(([k,v])=>[v,k]));
+const STK=['patty','bun','cheese','lettuce','tomato','onion','bacon','potato','cup','nugget','fish','sausage','dbun'];
+function encI(it){if(!it)return '';switch(it.type){case 'box':return '#'+STK.indexOf(it.k)+':'+it.n;case 'litter':return '!'+(it.n||1);case 'dtray':return '%';case 'patty':return 'P'+Math.round(it.cook*10);case 'sausage':return 's'+Math.round(it.cook*10);case 'fries':return it.burnt?'G':'F';case 'rings':return it.burnt?'J':'I';case 'nuggets':return it.burnt?'V':'U';case 'fishfry':return it.burnt?'N':'M';case 'drink':return 'D'+Math.max(0,DRINKS.indexOf(it.kind));case 'bottle':return 'S'+SAUCES.indexOf(it.sauce);
   case 'stack':return (it.paper?'Z':'X')+encL(it.layers);case 'tbag':return 'K'+it.items.map(encI).join('.');case 'tray':return 'R'+it.items.map(encI).join('.');case 'burger':return 'Y'+encL(it.layers);default:return IC[it.type]||'';}}
-function decI(s){if(!s||typeof s!=='string')return null;const c=s[0],r=s.slice(1);switch(c){case '!':return {type:'litter',n:Math.max(1,Math.min(5,+r||1))};case '%':return {type:'dtray'};case '#':{const [a,b]=r.split(':');return STK[+a]?{type:'box',k:STK[+a],n:+b||0}:null;}case 'P':return {type:'patty',cook:(+r||0)/10};case 'F':return {type:'fries',burnt:false};case 'G':return {type:'fries',burnt:true};case 'I':return {type:'rings',burnt:false};case 'J':return {type:'rings',burnt:true};case 'M':return {type:'fishfry',burnt:false};case 'N':return {type:'fishfry',burnt:true};case 'U':return {type:'nuggets',burnt:false};case 'V':return {type:'nuggets',burnt:true};case 'D':return {type:'drink',kind:DRINKS[+r]||'cola'};case 'Z':return {type:'stack',layers:decL(r),paper:true};case 'K':case 'R':return {type:c==='K'?'tbag':'tray',items:r?r.split('.').map(decI).filter(Boolean):[]};
+function decI(s){if(!s||typeof s!=='string')return null;const c=s[0],r=s.slice(1);switch(c){case '!':return {type:'litter',n:Math.max(1,Math.min(5,+r||1))};case '%':return {type:'dtray'};case '#':{const [a,b]=r.split(':');return STK[+a]?{type:'box',k:STK[+a],n:+b||0}:null;}case 'P':return {type:'patty',cook:(+r||0)/10};case 's':return {type:'sausage',cook:(+r||0)/10};case 'F':return {type:'fries',burnt:false};case 'G':return {type:'fries',burnt:true};case 'I':return {type:'rings',burnt:false};case 'J':return {type:'rings',burnt:true};case 'M':return {type:'fishfry',burnt:false};case 'N':return {type:'fishfry',burnt:true};case 'U':return {type:'nuggets',burnt:false};case 'V':return {type:'nuggets',burnt:true};case 'D':return {type:'drink',kind:DRINKS[+r]||'cola'};case 'Z':return {type:'stack',layers:decL(r),paper:true};case 'K':case 'R':return {type:c==='K'?'tbag':'tray',items:r?r.split('.').map(decI).filter(Boolean):[]};
   case 'S':return SAUCES[+r]?{type:'bottle',sauce:SAUCES[+r]}:null;case 'X':return {type:'stack',layers:decL(r)};case 'Y':return {type:'burger',layers:decL(r),wrapped:true};default:return ID[c]?{type:ID[c]}:null;}}
 
 // --- ホスト：状態を作って配る ---
@@ -2577,7 +2662,7 @@ function buildG(){
   if(!MP.epoch)MP.epoch=MP.me+':'+(++MP.epN);
   return {v:1,ep:MP.epoch,q:++MP.gSeq,ph:phase,t:Math.round(dayT*10),
     sd:{dv:(S.deliv||[]).map(d=>STK.indexOf(d.k)+':'+d.n).join(','),m:Math.round(S.money),d:S.day,r:Math.round(S.rating*100),o:S.orderNo,md:isEndless()?1:0,en:S.end?[S.end.k==='clear'?2:1,S.end.day,S.end.money,Math.round(S.end.r*100),S.end.sv]:0,tv:S.tsv|0,st:STK.map(k=>S.stock[k]),df:S.diff==='easy'?1:S.diff==='hard'?2:0,up:Object.keys(S.up).filter(k=>S.up[k]).join(',')},
-    gr:grill.map(g=>g.cook===null?-1:Math.round(g.cook*10)),fr:fry.map(f=>f.t===null?-1:[Math.round(f.t*10),FRY_KINDS.indexOf(f.kind)]),dk:drinks.map(d=>d.t===null?-1:Math.round(d.t*10)),
+    gr:grill.map(g=>g.cook===null?-1:Math.round(g.cook*10)+(g.k==='sausage'?100000:0)),fr:fry.map(f=>f.t===null?-1:[Math.round(f.t*10),FRY_KINDS.indexOf(f.kind)]),dk:drinks.map(d=>d.t===null?-1:Math.round(d.t*10)),
     bd:boards.map(b=>[encL(b.layers),b.done?1:0]),
     sw:slots.map(sl=>sl.c?sl.c.id:0),
     sl:slots.map(sl=>{const c=sl.c;if(!c||!c.order)return 0;const o=c.order;
@@ -2650,7 +2735,7 @@ function applyG(g){
   if(JSON.stringify(up)!==JSON.stringify(S.up)){S.up=up;applyUpgrades();}
   MP.inf=g.inf||[0,0];
   {
-  (g.gr||[]).forEach((v,i)=>{if(grill[i]&&!predLive('grill:'+i))grill[i].cook=v<0?null:v/10;});
+  (g.gr||[]).forEach((v,i)=>{if(grill[i]&&!predLive('grill:'+i)){grill[i].cook=v<0?null:(v%100000)/10;if(v>=0)grill[i].k=v>=100000?'sausage':'patty';}});
   (g.fr||[]).forEach((v,i)=>{if(!fry[i]||predLive('fry:'+i))return;if(!Array.isArray(v)){fry[i].t=null;return;}fry[i].t=v[0]/10;fry[i].kind=FRY_KINDS[v[1]]||'fries';});
   (Array.isArray(g.dk)?g.dk:[]).forEach((v,i)=>{if(drinks[i]&&!predLive('drink:'+i))drinks[i].t=v<0?null:v/10;});
   (g.bd||[]).forEach(([l,d],i)=>{const b=boards[i];if(!b||predLive('board:'+i))return;const L=decL(l);if(b.layers.join()!==L.join()||b.done!==!!d){b.layers=L;b.done=!!d;b.dirty=true;}});
@@ -2778,7 +2863,7 @@ function onPeersLeft(left){
     const av=MP.avatars[p.peer];if(av){scene.remove(av.g);disposeBody(av.body);delete MP.avatars[p.peer];}
     if(isHost()&&MP.heldOf[p.peer]){const it=MP.heldOf[p.peer];delete MP.heldOf[p.peer];
       if(it.type==='bottle'){const i=SAUCES.indexOf(it.sauce);if(bottleStands[i])bottleStands[i].visible=true;}
-      else if(active()){const pr=p.presence||{};addFree(it.type==='bun'?{type:'stack',layers:['bun_b','bun_t']}:it,Math.max(-(HW-.6),Math.min(HW-.6,(pr.x||0)/100)),0,Math.max(-4.9,Math.min(FZ-.45,(pr.z||-140)/100)));}}
+      else if(active()){const pr=p.presence||{};addFree(isBunT(it.type)?{type:'stack',layers:pairOf(it.type)}:it,Math.max(-(HW-.6),Math.min(HW-.6,(pr.x||0)/100)),0,Math.max(-4.9,Math.min(FZ-.45,(pr.z||-140)/100)));}}
     delete MP.seen[p.peer];delete MP.lastA[p.peer];
   });
 }
